@@ -4,12 +4,15 @@
 # Tim Coorens - April 2018
 #-------------------------------------------------
 
+#-------------------------------------------------
+# Functions
+#-------------------------------------------------
+
 ## Define the truncated binomial distribution
 dbinomtrunc = function(x, size, prob, minx=4) {
   dbinom(x, size, prob) / pbinom(minx-0.1, size, prob, lower.tail=F)
 }
 
-#
 estep = function(x,size,p.vector,prop.vector,ncomp, mode){
   ## p.vector = vector of probabilities for the individual components
   ## prop.vector = vector of proportions for the individual components
@@ -89,7 +92,7 @@ em.algo = function(x,size,prop.vector_inits,p.vector_inits,maxit=5000,tol=1e-6,n
        "Which_cluster"=which_clust)
 }
 
-binom_mix = function(x,size,nrange=1:3,criterion="BIC",maxit=5000,tol=1e-6, mode="Full"){
+binom_mix = function(x,size,nrange=1:5,criterion="BIC",maxit=5000,tol=1e-6, mode="Full"){
   ## Perform the EM algorithm for different numbers of components
   ## Select best fit using the Bayesian Information Criterion (BIC) 
   ## or the Akaike information criterion (AIC)
@@ -117,12 +120,15 @@ binom_mix = function(x,size,nrange=1:3,criterion="BIC",maxit=5000,tol=1e-6, mode
     return(results[[which.min(AIC_vec)]])
   }
 }
+#-------------------------------------------------
 
 
-
-n1 = 100; p1 = 0.1
+# Some dummy data
+n1 = 100; p1 = 0.15 # Two clones of different sizes (n) and underlying VAF (p)
 n2 = 50; p2 = 0.35
 depth=30
+
+#Generate vectors of read depth (trials) and number of reads supporting variants (successes)
 
 NR=rpois(n=n1+n2,lambda=depth)
 NV=rep(0,n1+n2)
@@ -138,6 +144,18 @@ if (Mode=='Truncated'){
 }
 
 res = binom_mix(NV,NR,mode=Mode)
+
+######
+# Output 'res' has the following information:
+# LL - log-likelihood vector of the iteration
+# prop - the optimal mixing proportion of clones
+# p - the probabilities (VAFs) associated with each clone
+# BIC - the Bayesian information criterion associated with best fit
+# AIC - the Akaike information criterion associated with best fit
+# n - the optimal number of clusters/clones
+# Which_cluster - same length as NV/NR input, which mutation belongs in which clone/cluster
+# BIC_vec - the vector of BIC for entire range
+
 
 p=hist(NV/NR,breaks=20,xlim=c(0,1),col='gray',freq=F,xlab="Variant Allele Frequency",
        main=paste0("Test (n=",length(NV),")"))
@@ -159,5 +177,4 @@ for (i in 1:res$n){
   text(y=y_coord,x=0.9,label=paste0("p1: ",round(res$p[i],digits=2)))
   segments(lwd=2,lty='dashed',col=cols[i],y0=y_coord+y_intv/4,x0=0.85,x1=0.95)
 }
-
 
