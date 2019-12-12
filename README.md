@@ -33,13 +33,12 @@ For every somatic SNV, we determined the maximum likelihood overdispersion param
 A low overdispersion captures artefactual variants as they appear seemingly randomly across samples and can be modelled as drawn from a binomial distribution. 
 In contrast, true somatic variants will be present at a clonal level in some, but not all crypt genomes, and are thus best represented by a beta-binomial with a high overdispersion. 
 To distinguish artefacts from true variants, we used ρ=0.1 as a threshold, below which variants were considered artefacts. 
-The code for this filtering approach is an adaptation of the Shearwater variant caller (1).
+The code for this filtering approach is an adaptation of the Shearwater variant caller (1) and can be found in beta_binom_filter.R.
 
 1. Gerstung M. et al. Subclonal variant calling with multiple samples and prior knowledge. Bioinformatics, 30(9), 1198-1204 (2014).
 
 ## Estimate/filter subclonal contribution using a binomial mixture model 
 
-The code for this filter can be found in beta_binom_filter.R.
 
 
 
